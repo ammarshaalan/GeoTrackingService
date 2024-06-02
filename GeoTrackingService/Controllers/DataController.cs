@@ -45,9 +45,9 @@ namespace GeoTrackingService.Controllers
                 var rsuData = await _firebaseService.GetRSUDataByKeyAsync(key);
 
                 // If the RSUData object is found, update its status to 1 (accepted)
-                if (rsuData != null)
+                if (rsuData != null && rsuData.Status != 2)
                 {
-                    rsuData.Status = 1; // Update status to accepted
+                    rsuData.Status = 2; // Update status to accepted
                     await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
                     return Ok("Data accepted successfully");
                 }
@@ -72,9 +72,9 @@ namespace GeoTrackingService.Controllers
                 var rsuData = await _firebaseService.GetRSUDataByKeyAsync(key);
 
                 // If the RSUData object is found, update its status to 0 (declined)
-                if (rsuData != null)
+                if (rsuData != null && rsuData.Status != 1)
                 {
-                    rsuData.Status = 0; // Update status to declined
+                    rsuData.Status = 1; // Update status to declined
                     await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
                     return Ok("Data declined successfully");
                 }

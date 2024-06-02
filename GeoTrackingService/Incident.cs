@@ -6,7 +6,7 @@
         public int CongestionRate { get; set; }
         public List<double> Location { get; set; }
         public int RoadClosure { get; set; }
-        public int Status { get; set; }
+        public int? Status { get; set; }
     }
 
 }
