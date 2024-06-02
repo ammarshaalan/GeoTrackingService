@@ -1,17 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GeoTrackingService.Interface;
+using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication1.Controllers
+namespace GeoTrackingService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class DataController : ControllerBase
     {
-        private readonly FirebaseService _firebaseService;
+        private readonly IFirebaseService _firebaseService;
 
-        public DataController()
+        public DataController(IFirebaseService firebaseService)
         {
-            _firebaseService = new FirebaseService("https://try1-f5bf1-default-rtdb.europe-west1.firebasedatabase.app");
-
+            _firebaseService = firebaseService;
         }
 
         [HttpGet]

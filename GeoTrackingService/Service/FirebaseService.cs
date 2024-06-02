@@ -1,19 +1,27 @@
 ﻿using Firebase.Database;
 using Firebase.Database.Query;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
-using WebApplication1;
+using GeoTrackingService;
+using GeoTrackingService.Interface;
 
-public class FirebaseService
+public class FirebaseService: IFirebaseService
 {
     private readonly FirebaseClient _firebaseClient;
+    private readonly ILogger<FirebaseService> _logger;
 
-    public FirebaseService(string firebaseBaseUrl)
+    public FirebaseService(string firebaseBaseUrl, ILogger<FirebaseService> logger)
     {
-        _firebaseClient = new FirebaseClient(firebaseBaseUrl);
-    }
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
+        if (string.IsNullOrEmpty(firebaseBaseUrl))
+        {
+            _logger.LogError("Firebase base URL is null or empty.");
+            throw new ArgumentException("Firebase base URL cannot be null or empty.", nameof(firebaseBaseUrl));
+        }
+
+        _firebaseClient = new FirebaseClient(firebaseBaseUrl);
+        _logger.LogInformation("Firebase client initialized with base URL: {FirebaseBaseUrl}", firebaseBaseUrl);
+    }
     public async Task<List<(string Key, RSUData Data)>> GetDataAsync()
     {
         try
@@ -32,7 +40,7 @@ public class FirebaseService
         }
         catch (Exception ex)
         {
-            // Handle exceptions
+            _logger.LogError(ex, "Error retrieving data.");
             return null;
         }
     }
@@ -58,7 +66,7 @@ public class FirebaseService
         catch (Exception ex)
         {
             // Handle exceptions
-            Console.WriteLine($"Error retrieving RSUData with key {key}: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving RSUData with key {Key}.", key);
             return null;
         }
     }
@@ -78,14 +86,14 @@ public class FirebaseService
             else
             {
                 // If the key or new data is null, the update cannot be performed
-                Console.WriteLine("Key or new data is null. Update failed.");
+                _logger.LogWarning("Key or new data is null. Update failed.");
                 return false;
             }
         }
         catch (Exception ex)
         {
             // Handle exceptions
-            Console.WriteLine($"Error updating RSUData with key {key}: {ex.Message}");
+            _logger.LogError(ex, "Error updating RSUData with key {Key}.", key);
             return false;
         }
     }
@@ -110,7 +118,7 @@ public class FirebaseService
         catch (Exception ex)
         {
             // Handle exceptions
-            Console.WriteLine($"Error retrieving GPS data: {ex.Message}");
+            _logger.LogError(ex, "Error retrieving GPS data.");
             return null;
         }
     }
@@ -146,25 +154,19 @@ public class FirebaseService
         }
         catch (Exception ex)
         {
-            // Handle exceptions
+            _logger.LogError(ex, "Error retrieving incident data.");
             return null;
         }
     }
 
     private string GetIncidentType(Incident incident)
     {
-        if (incident.Accident == 1)
+        return incident switch
         {
-            return "accident";
-        }
-        else if (incident.CongestionRate == 1)
-        {
-            return "congestionrate";
-        }
-        else if (incident.RoadClosure == 1)
-        {
-            return "roadclosure";
-        }
-        return "unknown";
+            _ when incident.Accident == 1 => "accident",
+            _ when incident.CongestionRate == 1 => "congestionrate",
+            _ when incident.RoadClosure == 1 => "roadclosure",
+            _ => "unknown"
+        };
     }
 }
