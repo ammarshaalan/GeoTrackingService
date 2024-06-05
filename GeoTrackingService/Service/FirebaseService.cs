@@ -59,7 +59,6 @@ public class FirebaseService: IFirebaseService
             }
             else
             {
-                // If the dataSnapshot is null, the RSUData with the specified key was not found
                 return null;
             }
         }
@@ -112,6 +111,7 @@ public class FirebaseService: IFirebaseService
             else
             {
                 // If the dataSnapshot is null, the GPS data was not found
+                _logger.LogWarning("Error retrieving GPS data.");
                 return null;
             }
         }
@@ -141,9 +141,9 @@ public class FirebaseService: IFirebaseService
                 {
                     var data = new Dictionary<string, object>
                     {
-                        { "location", incident.Location },
+                        { "location", incident.location },
                         { "type", GetIncidentType(incident) },
-                        { "status",  incident.Status}
+                        { "status",  incident.status}
                     };
 
                     result.Add((key, data));
@@ -163,9 +163,9 @@ public class FirebaseService: IFirebaseService
     {
         return incident switch
         {
-            _ when incident.Accident == 1 => "accident",
-            _ when incident.CongestionRate == 1 => "congestionrate",
-            _ when incident.RoadClosure == 1 => "roadclosure",
+            _ when incident.accident == 1 => "accident",
+            _ when incident.congestionRate == 1 => "congestionrate",
+            _ when incident.roadClosure == 1 => "roadclosure",
             _ => "unknown"
         };
     }

@@ -2,11 +2,10 @@
 {
     public class Incident
     {
-        public int Accident { get; set; }
-        public int CongestionRate { get; set; }
-        public List<double> Location { get; set; }
-        public int RoadClosure { get; set; }
-        public int? Status { get; set; }
+        public int accident { get; set; }
+        public int congestionRate { get; set; }
+        public List<double>? location { get; set; }
+        public int roadClosure { get; set; }
+        public int? status { get; set; }
     }
-
 }

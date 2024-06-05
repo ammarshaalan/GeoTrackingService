@@ -45,11 +45,19 @@ namespace GeoTrackingService.Controllers
                 var rsuData = await _firebaseService.GetRSUDataByKeyAsync(key);
 
                 // If the RSUData object is found, update its status to 1 (accepted)
-                if (rsuData != null && rsuData.Status != 2)
+                if (rsuData != null)
                 {
-                    rsuData.Status = 2; // Update status to accepted
-                    await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
-                    return Ok("Data accepted successfully");
+                    if(rsuData.status != 2)
+                    {
+                        rsuData.status = 2; // Update status to accepted
+                        await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
+                        return Ok("Data accepted successfully");
+
+                    }
+                    else
+                    {
+                        return Ok("Data is active already");
+                    }
                 }
                 else
                 {
@@ -72,11 +80,19 @@ namespace GeoTrackingService.Controllers
                 var rsuData = await _firebaseService.GetRSUDataByKeyAsync(key);
 
                 // If the RSUData object is found, update its status to 0 (declined)
-                if (rsuData != null && rsuData.Status != 1)
+                if (rsuData != null)
                 {
-                    rsuData.Status = 1; // Update status to declined
-                    await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
-                    return Ok("Data declined successfully");
+                    if(rsuData.status != 1)
+                    {
+                        rsuData.status = 1; // Update status to declined
+                        await _firebaseService.UpdateRSUDataAsync(key, rsuData); // Update data in Firebase
+                        return Ok("Data declined successfully");
+
+                    }
+                    else
+                    {
+                        return Ok("Data is rejected already");
+                    }
                 }
                 else
                 {
